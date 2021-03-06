@@ -7,6 +7,7 @@ import acm.graphics.GCompound;
 import acm.graphics.GLine;
 import acm.graphics.GOval;
 import acm.graphics.GPolygon;
+import acm.graphics.GRect;
 import acm.util.RandomGenerator;
 import vacman.model.Ghost;
 import vacman.model.MapTiles;
@@ -16,20 +17,44 @@ import vacman.model.VacManModel;
  * the second view is a corona version of pacman.
  *
  */
-public class CoronaResView extends VacManView {
+public class CoronaResView extends GCompound implements VacManView<VacManModel> {
+
+	/** The background of the game. */
+	private GRect background;
+
 	/**
-	 * the constructor that calls the super constructor but with modus 50 so there
-	 * is a bigger background
+	 * the constructor of the view.
+	 * 
+	 * @param modus the resolution of the view.
 	 */
 	public CoronaResView() {
-		super(50);
+		int columns = 28;
+		int rows = 14;
+		background = new GRect(columns * 50, rows * 50);
+		background.setFilled(true);
+		background.setColor(new Color(255, 99, 71));
+
+	}
+
+	/**
+	 * the render method updates the view.
+	 * 
+	 * @param model the model on which the map/view is created.
+	 */
+	public void render(VacManModel model) {
+		// removing all from the screen
+		removeAll();
+		// adding the background
+		add(background);
+		// creating the map depending on the model we use
+		createMap(model);
 	}
 
 	/** declaring the randomgenerator instance. */
 	RandomGenerator rgen = RandomGenerator.getInstance();
 
 	/**
-	 * implementing the abstract create map methof for this view.
+	 * implementing the abstract create map method for this view.
 	 */
 	public void createMap(VacManModel model) {
 

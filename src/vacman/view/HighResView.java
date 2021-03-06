@@ -16,12 +16,36 @@ import vacman.model.VacManModel;
  * with high graphics
  *
  */
-public class HighResView extends VacManView {
+public class HighResView extends GCompound implements VacManView<VacManModel> {
+	/** The background of the game. */
+	private GRect background;
+
 	/**
-	 * calling the super constructor with 50 in this constructor.
+	 * the constructor of the view.
+	 * 
+	 * @param modus the resolution of the view.
 	 */
 	public HighResView() {
-		super(50);
+		int columns = 28;
+		int rows = 14;
+		background = new GRect(columns * 50, rows * 50);
+		background.setFilled(true);
+		background.setColor(new Color(255, 99, 71));
+
+	}
+
+	/**
+	 * the render method updates the view.
+	 * 
+	 * @param model the model on which the map/view is created.
+	 */
+	public void render(VacManModel model) {
+		// removing all from the screen
+		removeAll();
+		// adding the background
+		add(background);
+		// creating the map depending on the model we use
+		createMap(model);
 	}
 
 	/**

@@ -32,4 +32,8 @@ public class LevelFileLoader {
 			maps.add(level);
 		}
 	}
+
+	public ArrayList<Level> getMaps() {
+		return maps;
+	}
 }

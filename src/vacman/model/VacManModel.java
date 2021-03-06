@@ -2,6 +2,7 @@ package vacman.model;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import vacman.view.VacManView;
@@ -41,9 +42,19 @@ public class VacManModel {
 	private Direction vacmanDir;
 
 	/** ArrayList of the levels. */
+	private ArrayList<Level> maps;
+	/** List of the views that are available at the moment. */
+	private ArrayList<VacManView> views;
 
 	/** Creates the model of the game with the current level. */
 	public VacManModel(int level, VacManView currentView) {
+		try {
+			LevelFileLoader loader = new LevelFileLoader();
+			maps = loader.getMaps();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		// Initializes everything.
 		hearts = 3;
 		currentLevel = level;

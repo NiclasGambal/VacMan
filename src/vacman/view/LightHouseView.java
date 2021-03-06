@@ -12,13 +12,22 @@ import vacman.model.VacManModel;
  * screen. extending VacManView.
  *
  */
-public class LightHouseView extends VacManView {
+public class LightHouseView implements VacManView<VacManModel> {
 
 	/**
 	 * calling the constructor of the superclass with modus 1.
 	 */
 	public LightHouseView() {
-		super(1);
+
+	}
+
+	/**
+	 * the render method updates the view.
+	 * 
+	 * @param model the model on which the map/view is created.
+	 */
+	public void render(VacManModel model) {
+		createMap(model);
 	}
 
 	/**

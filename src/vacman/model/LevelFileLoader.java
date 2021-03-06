@@ -1,4 +1,4 @@
-package de.cau.infprogoo.lighthouse;
+package vacman.model;
 
 import java.awt.Point;
 import java.io.File;

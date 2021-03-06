@@ -1,16 +1,19 @@
-package de.cau.infprogoo.lighthouse;
+package vacman.controller;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import vacman.model.Direction;
+import vacman.model.VacManModel;
+
 /**
  * This class is about the controlls and user model interactions from the VacMan
  * game. It extends MouseAdapter and implements the KeyListener interface, to
  * get the methods of both mouse and key events.
  */
-class VacManController extends MouseAdapter implements KeyListener {
+public class VacManController extends MouseAdapter implements KeyListener {
 	/** Instance that keeps the corresponding model. */
 	private VacManModel model;
 

@@ -1,8 +1,10 @@
-package de.cau.infprogoo.lighthouse;
+package vacman.model;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
+
+import vacman.view.VacManView;
 
 /**
  * This class keeps track with data in the array and the model of the game but

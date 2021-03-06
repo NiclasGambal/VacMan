@@ -1,4 +1,4 @@
-package de.cau.infprogoo.lighthouse;
+package vacman.model;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -6,13 +6,14 @@ import java.awt.Point;
 import acm.util.RandomGenerator;
 
 /**
- * this class represents the model of the ghost with all their properties and algorithm how they move.
+ * this class represents the model of the ghost with all their properties and
+ * algorithm how they move.
  *
  */
 public class Ghost {
 	/** a point that represents the current position of a goast. */
 	private Point ghostPosition;
-	
+
 //	private Point ghostPrePos;
 	/** the spawn position of a ghost */
 	private Point ghostSpawnPosition;
@@ -27,26 +28,31 @@ public class Ghost {
 
 	/**
 	 * the constructor that creates a ghost.
-	 * @param startPos the position where the goast starts and respawns after collusion.
-	 * @param startDir  the direction of the goast at the beginning of the game. 
-	 * @param map	the map where we play. a.k.a. the level as MapTiles Array.
-	 * @param color	the specific color of a ghoast.
+	 * 
+	 * @param startPos the position where the goast starts and respawns after
+	 *                 collusion.
+	 * @param startDir the direction of the goast at the beginning of the game.
+	 * @param map      the map where we play. a.k.a. the level as MapTiles Array.
+	 * @param color    the specific color of a ghoast.
 	 */
 	public Ghost(Point startPos, Direction startDir, MapTiles[][] map, Color color) {
-		// saving the inputs in instance variables of the goast and creatint a new ghoast
+		// saving the inputs in instance variables of the goast and creatint a new
+		// ghoast
 		ghostPosition = new Point(startPos);
 		ghostSpawnPosition = new Point(startPos);
 		ghostDirection = startDir;
 		this.color = color;
 		this.map = map;
 	}
+
 	/**
 	 * the move method represents the KI of the ghosts and how they move.
 	 */
 	public void move() {
-		// their speed or exactly their step which is added or subtracted from their coordinates
+		// their speed or exactly their step which is added or subtracted from their
+		// coordinates
 		int velocity = 1;
-		// the probability of changing their direction by coincidence 
+		// the probability of changing their direction by coincidence
 		double changeProbability = 0.2;
 		// declaring the changable direction
 		Direction change = Direction.DOWN;
@@ -70,7 +76,8 @@ public class Ghost {
 			if (map[ghostY][ghostX - 1] == MapTiles.WALL) {
 				ghostDirection = change;
 			}
-			// if there is a field next to him with a coin or nothing he still has the probability of changing direction
+			// if there is a field next to him with a coin or nothing he still has the
+			// probability of changing direction
 			if (map[ghostY][ghostX - 1] == MapTiles.COIN || map[ghostY][ghostX - 1] == MapTiles.VOID) {
 				if (rgen.nextBoolean(changeProbability)) {
 					ghostDirection = change;
@@ -114,29 +121,37 @@ public class Ghost {
 			}
 		}
 	}
+
 	/**
 	 * gets the current position of a ghost.
+	 * 
 	 * @return the current position.
 	 */
 	public Point getPos() {
 		return ghostPosition;
 	}
+
 	/**
 	 * setter for the position of a ghost.
+	 * 
 	 * @param pos the position where the ghost should be.
 	 */
 	public void setPos(Point pos) {
 		ghostPosition.setLocation(pos);
 	}
+
 	/**
 	 * gets the color of a ghost.
-	 * @return	the color a ghost has.
+	 * 
+	 * @return the color a ghost has.
 	 */
 	public Color getColor() {
 		return color;
 	}
+
 	/**
 	 * gets the spawn point of a ghost. needed for reset into its home.
+	 * 
 	 * @return the spawn position.
 	 */
 	public Point getGhostSpawnPos() {

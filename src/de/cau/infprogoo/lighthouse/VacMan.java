@@ -1,6 +1,9 @@
 package de.cau.infprogoo.lighthouse;
 
 import acm.program.GraphicsProgram;
+import vacman.controller.VacManController;
+import vacman.model.VacManModel;
+import vacman.view.CoronaResView;
 
 /**
  * The main game class.
@@ -16,7 +19,7 @@ public class VacMan extends GraphicsProgram {
 		// Creates a Timer object to create a game loop.
 		Timer timer = new Timer(GAME_LOOP);
 		// Invoke a view for from the VacManView class.
-		CoronaRes low = new CoronaRes();
+		CoronaResView low = new CoronaResView();
 		// Creates a model, with specified start map and view.
 		VacManModel model = new VacManModel(1, low);
 		// Creates the controller and adds a KeyListener to it.
@@ -37,18 +40,4 @@ public class VacMan extends GraphicsProgram {
 
 	}
 
-}
-
-/**
- * Enum that keeps track with the Direction something is moving.
- */
-enum Direction {
-	RIGHT, LEFT, UP, DOWN
-}
-
-/**
- * Enum that keeps track with the tile set of the maps.
- */
-enum MapTiles {
-	HEART, COIN, WALL, VOID
 }

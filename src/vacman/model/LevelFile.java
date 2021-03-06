@@ -1,17 +1,19 @@
 package vacman.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class LevelFile {
+
 	public int[][] idMap;
 	public int playerPositionX;
 	public int playerPositionY;
 	public String name;
-	public ArrayList<Position> enemyPositions;
+	public List<Position> enemyPositions;
 
 }
 
 class Position {
+
 	public int posX;
 	public int posY;
 

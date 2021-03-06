@@ -40,6 +40,8 @@ public class VacManModel {
 	/** Direction of the VacMan movement. */
 	private Direction vacmanDir;
 
+	/** ArrayList of the levels. */
+
 	/** Creates the model of the game with the current level. */
 	public VacManModel(int level, VacManView currentView) {
 		// Initializes everything.

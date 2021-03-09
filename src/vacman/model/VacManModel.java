@@ -15,7 +15,7 @@ import vacman.view.VacManView;
 public class VacManModel {
 
 	/** The current view. */
-	private VacManView view;
+	private VacManView<VacManModel> view;
 	/** The gameover screen as tile map. */
 	private MapTiles[][] gameoverMap = new MapTiles[14][28];
 	/** The win screen as tile map. */
@@ -37,17 +37,21 @@ public class VacManModel {
 	/** Counter for the lives. */
 	private int hearts;
 	/** The number of the current Map. */
-	private int currentLevel;
+	private int currentLevel = -1;
 	/** Direction of the VacMan movement. */
 	private Direction vacmanDir;
+	/** The currently displayed screen. */
+	private Screen currentScreen = Screen.START;
 
 	/** ArrayList of the levels. */
 	private ArrayList<Level> maps;
+	/** Currently active level. */
+	private Level activeLevel;
 	/** List of the views that are available at the moment. */
-	private ArrayList<VacManView> views;
+	private ArrayList<VacManView<VacManModel>> views;
 
 	/** Creates the model of the game with the current level. */
-	public VacManModel(int level, VacManView currentView) {
+	public VacManModel(int level, VacManView<VacManModel> currentView) {
 		try {
 			LevelFileLoader loader = new LevelFileLoader();
 			maps = loader.getMaps();
@@ -55,9 +59,18 @@ public class VacManModel {
 			e.printStackTrace();
 		}
 
+		if (currentScreen == Screen.CURRENTLEVEL) {
+			activeLevel = maps.get(currentLevel);
+			map = activeLevel.getMap();
+			vacmanPosition.setLocation(activeLevel.getVacmanStartPos());
+			for (Point ghostStartPos : activeLevel.getGhostStartPos()) {
+				ghosts.add(new Ghost(ghostStartPos, Direction.DOWN, activeLevel.getMap(), Color.CYAN));
+			}
+
+		}
+
 		// Initializes everything.
 		hearts = 3;
-		currentLevel = level;
 		view = currentView;
 		numberOfPoints = 128;
 		vacmanSpawnPosition = new Point(14, 4);
@@ -338,6 +351,7 @@ public class VacManModel {
 		int velocity = 1;
 		int vacX = (int) vacmanPosition.getX();
 		int vacY = (int) vacmanPosition.getY();
+
 		// Checks in which direction VacMan runs right now and checks the corresponding
 		// field he is moving into.
 		if (vacmanDir == Direction.LEFT) {

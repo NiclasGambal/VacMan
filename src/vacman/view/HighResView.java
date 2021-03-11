@@ -4,11 +4,13 @@ import java.awt.Color;
 
 import acm.graphics.GArc;
 import acm.graphics.GCompound;
+import acm.graphics.GImage;
 import acm.graphics.GOval;
 import acm.graphics.GPolygon;
 import acm.graphics.GRect;
 import vacman.model.Ghost;
 import vacman.model.MapTiles;
+import vacman.model.Screen;
 import vacman.model.VacManModel;
 
 /**
@@ -19,6 +21,8 @@ import vacman.model.VacManModel;
 public class HighResView extends GCompound implements VacManView<VacManModel> {
 	/** The background of the game. */
 	private GRect background;
+	/** The resolution. */
+	private int res = 50;
 
 	/**
 	 * the constructor of the view.
@@ -28,7 +32,7 @@ public class HighResView extends GCompound implements VacManView<VacManModel> {
 	public HighResView() {
 		int columns = 28;
 		int rows = 14;
-		background = new GRect(columns * 50, rows * 50);
+		background = new GRect(columns * res, rows * res);
 		background.setFilled(true);
 		background.setColor(new Color(255, 99, 71));
 
@@ -44,8 +48,10 @@ public class HighResView extends GCompound implements VacManView<VacManModel> {
 		removeAll();
 		// adding the background
 		add(background);
+
 		// creating the map depending on the model we use
 		createMap(model);
+
 	}
 
 	/**
@@ -54,32 +60,49 @@ public class HighResView extends GCompound implements VacManView<VacManModel> {
 	 * @param model the model of the game.
 	 */
 	public void createMap(VacManModel model) {
-		// saving the current map as local variable
-		MapTiles[][] map = model.getCurrentMap();
+		if (model.getCurrentScreen() == Screen.CURRENTLEVEL) {
+			// saving the current map as local variable
+			MapTiles[][] map = model.getCurrentMap();
 
-		// going through each element of the map array
-		// r = rows
-		// c = columns
-		for (int r = 0; r < 14; r++) {
-			for (int c = 0; c < 28; c++) {
-				// if there is a certain element represented in the map array it is added to the
-				// canvas in its array positin *50
-				if (map[r][c] == MapTiles.WALL) {
-					add(new WallHighRes(), c * 50, r * 50);
-				} else if (map[r][c] == MapTiles.COIN) {
-					add(new CoinsHighRes(), c * 50, r * 50);
-				} else if (map[r][c] == MapTiles.HEART) {
-					add(new HeartsHighRes(), c * 50, r * 50);
+			// going through each element of the map array
+			// r = rows
+			// c = columns
+			for (int r = 0; r < 14; r++) {
+				for (int c = 0; c < 28; c++) {
+					// if there is a certain element represented in the map array it is added to the
+					// canvas in its array positin *50
+					if (map[r][c] == MapTiles.WALL) {
+						add(new WallHighRes(), c * res, r * res);
+					} else if (map[r][c] == MapTiles.COIN) {
+						add(new CoinsHighRes(), c * res, r * res);
+					} else if (map[r][c] == MapTiles.HEART) {
+						add(new HeartsHighRes(), c * res, r * res);
+					}
 				}
 			}
-		}
-		// adding the vacman with nice skin at this place
-		add(new VacManHighRes(), model.getVacManPos().getX() * 50, model.getVacManPos().getY() * 50);
-		// adding every ghost with the high resolution skin
-		for (Ghost ghost : model.getGhosts()) {
-			add(new GhostHighRes(ghost.getColor()), ghost.getPos().getX() * 50, ghost.getPos().getY() * 50);
+			// adding the vacman with nice skin at this place
+			add(new VacManHighRes(), model.getVacManPos().getX() * res, model.getVacManPos().getY() * res);
+			// adding every ghost with the high resolution skin
+			for (Ghost ghost : model.getGhosts()) {
+				add(new GhostHighRes(ghost.getColor()), ghost.getPos().getX() * res, ghost.getPos().getY() * res);
+			}
+		} else if (model.getCurrentScreen() == Screen.GAMEOVER) {
+			add(new GImage("HighResGameOver.jpg"));
+		} else if (model.getCurrentScreen() == Screen.WIN) {
+			add(new GImage("HighResWinScreen.jpg"));
+		} else if (model.getCurrentScreen() == Screen.START) {
+			add(new GImage("HighResStartScreen.jpg"));
+		} else if (model.getCurrentScreen() == Screen.SELECTION) {
+			add(new GImage("HighResLevelSelection.png"));
+		} else if (model.getCurrentScreen() == Screen.SETTINGS) {
+			add(new GImage("HighResSettings.png"));
 		}
 
+	}
+
+	/** Getter for the resolution. */
+	public int getRes() {
+		return res;
 	}
 }
 

@@ -5,25 +5,22 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import vacman.view.CoronaResView;
+import vacman.view.HighResView;
+import vacman.view.LightHouseView;
 import vacman.view.VacManView;
 
 /**
  * This class keeps track with data in the array and the model of the game but
  * is not responsible for the actual display. Whenever the controller got new
- * input, the model notifies all registered views.S
+ * input, the model notifies all registered views.
  */
 public class VacManModel {
 
 	/** The current view. */
-	private VacManView<VacManModel> view;
-	/** The gameover screen as tile map. */
-	private MapTiles[][] gameoverMap = new MapTiles[14][28];
-	/** The win screen as tile map. */
-	private MapTiles[][] winMap = new MapTiles[14][28];
+	private VacManView<VacManModel> currentView;
 	/** The current map. */
 	private MapTiles[][] map = new MapTiles[14][28];
-	/** The tile map for level one. */
-	private MapTiles[][] mapLevel1 = new MapTiles[14][28];
 	/** The position of VacMan. */
 	private Point vacmanPosition;
 	/** Position of VacMan one time step before. */
@@ -42,16 +39,17 @@ public class VacManModel {
 	private Direction vacmanDir;
 	/** The currently displayed screen. */
 	private Screen currentScreen = Screen.START;
-
 	/** ArrayList of the levels. */
 	private ArrayList<Level> maps;
 	/** Currently active level. */
 	private Level activeLevel;
 	/** List of the views that are available at the moment. */
-	private ArrayList<VacManView<VacManModel>> views;
+	private ArrayList<VacManView<VacManModel>> views = new ArrayList<VacManView<VacManModel>>();
+	/** Boolean which is true if the LHV is on. */
+	private boolean lightHouseOn = false;
 
 	/** Creates the model of the game with the current level. */
-	public VacManModel(int level, VacManView<VacManModel> currentView) {
+	public VacManModel() {
 		try {
 			LevelFileLoader loader = new LevelFileLoader();
 			maps = loader.getMaps();
@@ -66,12 +64,20 @@ public class VacManModel {
 			for (Point ghostStartPos : activeLevel.getGhostStartPos()) {
 				ghosts.add(new Ghost(ghostStartPos, Direction.DOWN, activeLevel.getMap(), Color.CYAN));
 			}
-
 		}
 
 		// Initializes everything.
 		hearts = 3;
-		view = currentView;
+		LightHouseView lightV = new LightHouseView();
+		CoronaResView coronaV = new CoronaResView();
+		HighResView highV = new HighResView();
+		// lightV: 0.
+		views.add(lightV);
+		views.add(highV);
+		views.add(coronaV);
+
+		currentView = highV;
+
 		numberOfPoints = 128;
 		vacmanSpawnPosition = new Point(14, 4);
 		vacmanPosition = new Point(14, 4);
@@ -109,67 +115,7 @@ public class VacManModel {
 				{ 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 } };
 		// The map is converted into a MapTiles map.
 		map = intToMapTiles(visualMap);
-		mapLevel1 = map;
-		int[][] gameoverscreen = {
-				// row 0
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 1
-				{ 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 2
-				{ 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 3
-				{ 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 4
-				{ 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 5
-				{ 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 6
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 7
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 8
-				{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 },
-				// row 9
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 },
-				// row 10
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 },
-				// row 11
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 },
-				// row 12
-				{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 },
-				// row 13
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
-		// This map also will be converted.
-		gameoverMap = intToMapTiles(gameoverscreen);
-		int[][] winscreen = { // row 0
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 1
-				{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2, 2, 2, 2, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 2
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 3
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 4
-				{ 0, 3, 3, 0, 3, 3, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 5
-				{ 3, 3, 3, 0, 3, 3, 3, 0, 0, 2, 0, 0, 0, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0 },
-				// row 6
-				{ 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 7
-				{ 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 8
-				{ 0, 0, 3, 3, 3, 0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 9
-				{ 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 10
-				{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 11
-				{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0 },
-				// row 12
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0 },
-				// row 13
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
-		winMap = intToMapTiles(winscreen);
+
 		// Adds two Ghost objects to the Ghost arraylist.
 		ghosts.add(new Ghost(new Point(13, 9), Direction.DOWN, map, Color.CYAN));
 		ghosts.add(new Ghost(new Point(13, 10), Direction.DOWN, map, Color.MAGENTA));
@@ -184,7 +130,7 @@ public class VacManModel {
 	 *         MapTiles values or an exception, if the values do not match any
 	 *         MapTiles values.
 	 */
-	public MapTiles[][] intToMapTiles(int[][] map) {
+	public static MapTiles[][] intToMapTiles(int[][] map) {
 		// Initializes MapTiles map.
 		MapTiles[][] tileMap = new MapTiles[14][28];
 		// Converts/copies the int map into the MapTiles map.
@@ -230,19 +176,46 @@ public class VacManModel {
 		return vacmanPosition;
 	}
 
+	/** Setter for the current screen. */
+	public void setCurrentScreen(Screen currentScreen) {
+		this.currentScreen = currentScreen;
+	}
+
+	/** Setter for the current level. */
+	public void setCurrentLevel(int currentLevel) {
+		this.currentLevel = currentLevel;
+	}
+
+	/** Getter for the current screen. */
+	public Screen getCurrentScreen() {
+		return currentScreen;
+	}
+
 	/** Getter for the Ghost arraylist. */
 	public ArrayList<Ghost> getGhosts() {
 		return ghosts;
 	}
 
 	/** renders the current view of the model. */
-	public void notifyView() {
-		view.render(this);
+	public void notifyViews() {
+		currentView.render(this);
+		if (lightHouseOn) {
+			views.get(0).render(this);
+		}
 	}
 
 	/** Getter for the current view. */
-	public VacManView getVacManView() {
-		return view;
+	public VacManView<VacManModel> getCurrentView() {
+		return currentView;
+	}
+
+	/** Setter for the current view list. */
+	public void setCurrentView(VacManView<VacManModel> currentView) {
+		this.currentView = currentView;
+	}
+
+	public ArrayList<VacManView<VacManModel>> getViews() {
+		return views;
 	}
 
 	/** Returns a copy of the current map array. */
@@ -265,20 +238,10 @@ public class VacManModel {
 		currentLevel = level;
 	}
 
-	/** Getter of the current win screen map. */
-	public MapTiles[][] getWinMap() {
-		return winMap;
-	}
-
-	/** Getter for the level one map. */
-	public MapTiles[][] getLevel1Map() {
-		return mapLevel1;
-	}
-
 	/** The method that is called when the game is gameover. */
 	public void gameover() {
 		// Switches to the gameover map and sets the corresponding level.
-		map = gameoverMap;
+
 		currentLevel = -1;
 		// Also resets numberOfPoints and hearts.
 		numberOfPoints = 128;
@@ -289,7 +252,7 @@ public class VacManModel {
 	/** The method that is called when the game is won. */
 	public void win() {
 		// Switches to the win map and sets the corresponding level.
-		map = winMap;
+
 		currentLevel = 0;
 		// Also resets numberOfPoints and hearts.
 		numberOfPoints = 128;
@@ -302,38 +265,9 @@ public class VacManModel {
 	 * correlated views.
 	 */
 	public void update() {
-		// Goes through all ghosts and checks if their position collides with VacMans.
+		vacmanPrePos = vacmanPosition;
 		for (Ghost ghost : ghosts) {
-
-			if (vacmanPosition.equals(ghost.getPos())) {
-				// If so, a heart disappears and the heart counter gets decremented.
-				hearts--;
-				if (hearts == 2) {
-					map[0][2] = MapTiles.VOID;
-					// Deathanimation.
-
-				} else if (hearts == 1) {
-					map[0][1] = MapTiles.VOID;
-					// Explosionmethod.
-
-				} else if (hearts == 0) {
-					map[0][0] = MapTiles.VOID;
-					// If the last heart disappears the game is over and so the gameover method is
-					// called. Also VacMan position and direction is reseted.
-					vacmanPosition.setLocation(vacmanSpawnPosition);
-					vacmanDir = null;
-					gameover();
-
-				}
-				// After VacMan hits a ghost, the VacMan and ghosts are reseted to their
-				// spawnpoints.
-				vacmanPosition.setLocation(vacmanSpawnPosition);
-				for (Ghost ghost1 : ghosts) {
-					ghost1.setPos(ghost1.getGhostSpawnPos());
-				}
-
-				vacmanDir = null;
-			}
+			ghost.setGhostPrePos(ghost.getPos());
 		}
 		// If the numberOfPoints counter reaches 0 all coins are collected and the game
 		// is won.
@@ -409,8 +343,41 @@ public class VacManModel {
 		for (Ghost ghost : ghosts) {
 			ghost.move();
 		}
+		// Goes through all ghosts and checks if their position collides with VacMans.
+		for (Ghost ghost : ghosts) {
+
+			if (vacmanPosition.equals(ghost.getGhostPrePos()) && vacmanPrePos.equals(ghost.getPos())) {
+				// If so, a heart disappears and the heart counter gets decremented.
+				hearts--;
+				if (hearts == 2) {
+					map[0][2] = MapTiles.VOID;
+					// Death animation.
+
+				} else if (hearts == 1) {
+					map[0][1] = MapTiles.VOID;
+					// Explosionmethod.
+
+				} else if (hearts == 0) {
+					map[0][0] = MapTiles.VOID;
+					// If the last heart disappears the game is over and so the gameover method is
+					// called. Also VacMan position and direction is reseted.
+					vacmanPosition.setLocation(vacmanSpawnPosition);
+					vacmanDir = null;
+					gameover();
+
+				}
+				// After VacMan hits a ghost, the VacMan and ghosts are reseted to their
+				// spawnpoints.
+				vacmanPosition.setLocation(vacmanSpawnPosition);
+				for (Ghost ghost1 : ghosts) {
+					ghost1.setPos(ghost1.getGhostSpawnPos());
+				}
+
+				vacmanDir = null;
+			}
+		}
 		// And the view is updated as well.
-		notifyView();
+		notifyViews();
 	}
 
 }

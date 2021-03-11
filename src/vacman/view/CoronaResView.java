@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import acm.graphics.GArc;
 import acm.graphics.GCompound;
+import acm.graphics.GImage;
 import acm.graphics.GLine;
 import acm.graphics.GOval;
 import acm.graphics.GPolygon;
@@ -11,6 +12,7 @@ import acm.graphics.GRect;
 import acm.util.RandomGenerator;
 import vacman.model.Ghost;
 import vacman.model.MapTiles;
+import vacman.model.Screen;
 import vacman.model.VacManModel;
 
 /**
@@ -21,6 +23,8 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 
 	/** The background of the game. */
 	private GRect background;
+	/** The resolution. */
+	private int res = 50;
 
 	/**
 	 * the constructor of the view.
@@ -30,10 +34,15 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 	public CoronaResView() {
 		int columns = 28;
 		int rows = 14;
-		background = new GRect(columns * 50, rows * 50);
+		background = new GRect(columns * res, rows * res);
 		background.setFilled(true);
 		background.setColor(new Color(255, 99, 71));
 
+	}
+
+	@Override
+	public int getRes() {
+		return res;
 	}
 
 	/**
@@ -57,36 +66,47 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 	 * implementing the abstract create map method for this view.
 	 */
 	public void createMap(VacManModel model) {
+		if (model.getCurrentScreen() == Screen.CURRENTLEVEL) {
+			// grabbing the current map from the model
+			MapTiles[][] map = model.getCurrentMap();
 
-		// grabbing the current map from the model
-		MapTiles[][] map = model.getCurrentMap();
-
-		// going through each element of that array that represents the map
-		// r = rows
-		// c = columns
-		for (int r = 0; r < 14; r++) {
-			for (int c = 0; c < 28; c++) {
-				// if there is a wall at that current pos
-				if (map[r][c] == MapTiles.WALL) {
-					// adding the GCompund of the wall at the position c, r and multiplied with 50
-					// because every graphic obj in this view is 50*50
-					add(new WallHighRes(), c * 50, r * 50);
-					// same thing for the coin and heart
-				} else if (map[r][c] == MapTiles.COIN) {
-					Color color = rgen.nextColor();
-					add(new CoinsCoronaRes(color), c * 50, r * 50);
-				} else if (map[r][c] == MapTiles.HEART) {
-					add(new HeartsHighRes(), c * 50, r * 50);
+			// going through each element of that array that represents the map
+			// r = rows
+			// c = columns
+			for (int r = 0; r < 14; r++) {
+				for (int c = 0; c < 28; c++) {
+					// if there is a wall at that current pos
+					if (map[r][c] == MapTiles.WALL) {
+						// adding the GCompund of the wall at the position c, r and multiplied with 50
+						// because every graphic obj in this view is 50*50
+						add(new WallHighRes(), c * res, r * res);
+						// same thing for the coin and heart
+					} else if (map[r][c] == MapTiles.COIN) {
+						Color color = rgen.nextColor();
+						add(new CoinsCoronaRes(color), c * res, r * res);
+					} else if (map[r][c] == MapTiles.HEART) {
+						add(new HeartsHighRes(), c * res, r * res);
+					}
 				}
 			}
-		}
-		// adding the Vacman in his Corona skin at his position on the map
-		add(new VacManCoronaRes(), model.getVacManPos().getX() * 50, model.getVacManPos().getY() * 50);
-		// adding every ghost with its color
-		for (Ghost ghost : model.getGhosts()) {
-			add(new GhostCoronaRes(ghost.getColor()), ghost.getPos().getX() * 50, ghost.getPos().getY() * 50);
-		}
+			// adding the Vacman in his Corona skin at his position on the map
+			add(new VacManCoronaRes(), model.getVacManPos().getX() * res, model.getVacManPos().getY() * res);
+			// adding every ghost with its color
+			for (Ghost ghost : model.getGhosts()) {
+				add(new GhostCoronaRes(ghost.getColor()), ghost.getPos().getX() * res, ghost.getPos().getY() * res);
+			}
 
+		} else if (model.getCurrentScreen() == Screen.GAMEOVER) {
+			add(new GImage("HighResGameOver.jpg"));
+		} else if (model.getCurrentScreen() == Screen.WIN) {
+			add(new GImage("HighResWinScreen.jpg"));
+		} else if (model.getCurrentScreen() == Screen.START) {
+			add(new GImage("HighResStartScreen.jpg"));
+		} else if (model.getCurrentScreen() == Screen.SELECTION) {
+			add(new GImage("HighResLevelSelection.png"));
+		} else if (model.getCurrentScreen() == Screen.SETTINGS) {
+			add(new GImage("HighResSettings.png"));
+		}
 	}
 }
 

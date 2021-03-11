@@ -14,7 +14,7 @@ public class Ghost {
 	/** a point that represents the current position of a goast. */
 	private Point ghostPosition;
 
-//	private Point ghostPrePos;
+	private Point ghostPrePos;
 	/** the spawn position of a ghost */
 	private Point ghostSpawnPosition;
 	/** the direction of a ghosts movement. */
@@ -138,6 +138,16 @@ public class Ghost {
 	 */
 	public void setPos(Point pos) {
 		ghostPosition.setLocation(pos);
+	}
+
+	/** Getter for the ghost pre-position. */
+	public Point getGhostPrePos() {
+		return ghostPrePos;
+	}
+
+	/** Setter for the ghost pre-position. */
+	public void setGhostPrePos(Point ghostPrePos) {
+		this.ghostPrePos = ghostPrePos;
 	}
 
 	/**

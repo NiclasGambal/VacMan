@@ -4,7 +4,6 @@ import acm.graphics.GObject;
 import acm.program.GraphicsProgram;
 import vacman.controller.VacManController;
 import vacman.model.VacManModel;
-import vacman.view.HighResView;
 
 /**
  * The main game class.
@@ -19,15 +18,15 @@ public class VacMan extends GraphicsProgram {
 		setSize(1415, 740);
 		// Creates a Timer object to create a game loop.
 		Timer timer = new Timer(GAME_LOOP);
-		// Invoke a view for from the VacManView class.
-		HighResView low = new HighResView();
 		// Creates a model, with specified start map and view.
-		VacManModel model = new VacManModel(1, low);
+		VacManModel model = new VacManModel();
 		// Creates the controller and adds a KeyListener to it.
 		VacManController controller = new VacManController(model);
 		addKeyListeners(controller);
+		addMouseListeners(controller);
 		// Adds the view to the canvas.
-		add((GObject) model.getVacManView());
+
+		add((GObject) model.getCurrentView());
 		// The game loop, which is repeated endlessly.
 		while (true) {
 			model.update();

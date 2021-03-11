@@ -20,5 +20,12 @@ public interface VacManView<VacManModel> {
 	 * 
 	 * @param model the model of the game/map.
 	 */
-	public abstract void createMap(VacManModel model);
+	public void createMap(VacManModel model);
+
+	/**
+	 * Getter for the resolution.
+	 * 
+	 * @return The resolution as an int.
+	 */
+	public int getRes();
 }

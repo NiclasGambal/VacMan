@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -18,7 +17,6 @@ public class LevelFileLoader {
 		String[] pathnames;
 		File f = new File("static/levels");
 		pathnames = f.list();
-		System.out.println(Arrays.toString(pathnames));
 		maps = new ArrayList<Level>();
 		for (String path : pathnames) {
 			ObjectMapper mapper = new ObjectMapper();

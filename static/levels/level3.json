@@ -25,9 +25,23 @@
 		{
 			"posX":13,
 			"posY":10
+		},
+		{
+			"posX":13,
+			"posY":9
+			},
+		{
+			"posX":13,
+			"posY":10
+		},
+		{
+			"posX":13,
+			"posY":9
+			},
+		{
+			"posX":13,
+			"posY":10
 		}
 		],
 	"name":"level1"
 }
-
-		

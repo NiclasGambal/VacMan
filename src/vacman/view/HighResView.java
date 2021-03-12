@@ -51,6 +51,7 @@ public class HighResView extends GCompound implements VacManView<VacManModel> {
 
 		// creating the map depending on the model we use
 		createMap(model);
+		sendToFront();
 
 	}
 
@@ -95,7 +96,12 @@ public class HighResView extends GCompound implements VacManView<VacManModel> {
 		} else if (model.getCurrentScreen() == Screen.SELECTION) {
 			add(new GImage("HighResLevelSelection.png"));
 		} else if (model.getCurrentScreen() == Screen.SETTINGS) {
-			add(new GImage("HighResSettings.png"));
+			if (model.getLightHouseOn()) {
+				add(new GImage("HighResSettingsChecked.png"));
+			} else {
+				add(new GImage("HighResSettingsUnchecked.png"));
+
+			}
 		}
 
 	}

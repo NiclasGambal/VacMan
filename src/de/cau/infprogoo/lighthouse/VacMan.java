@@ -25,8 +25,10 @@ public class VacMan extends GraphicsProgram {
 		addKeyListeners(controller);
 		addMouseListeners(controller);
 		// Adds the view to the canvas.
+		for (int i = 1; i < model.getViews().size(); i++) {
+			add((GObject) model.getViews().get(i));
+		}
 
-		add((GObject) model.getCurrentView());
 		// The game loop, which is repeated endlessly.
 		while (true) {
 			model.update();

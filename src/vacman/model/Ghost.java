@@ -40,6 +40,7 @@ public class Ghost {
 		// ghoast
 		ghostPosition = new Point(startPos);
 		ghostSpawnPosition = new Point(startPos);
+		ghostPrePos = new Point(startPos);
 		ghostDirection = startDir;
 		this.color = color;
 		this.map = map;
@@ -147,7 +148,7 @@ public class Ghost {
 
 	/** Setter for the ghost pre-position. */
 	public void setGhostPrePos(Point ghostPrePos) {
-		this.ghostPrePos = ghostPrePos;
+		this.ghostPrePos.setLocation(ghostPrePos);
 	}
 
 	/**

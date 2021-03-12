@@ -8,7 +8,6 @@ import acm.graphics.GImage;
 import acm.graphics.GLine;
 import acm.graphics.GOval;
 import acm.graphics.GPolygon;
-import acm.graphics.GRect;
 import acm.util.RandomGenerator;
 import vacman.model.Ghost;
 import vacman.model.MapTiles;
@@ -22,7 +21,7 @@ import vacman.model.VacManModel;
 public class CoronaResView extends GCompound implements VacManView<VacManModel> {
 
 	/** The background of the game. */
-	private GRect background;
+	private GImage background;
 	/** The resolution. */
 	private int res = 50;
 
@@ -32,12 +31,7 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 	 * @param modus the resolution of the view.
 	 */
 	public CoronaResView() {
-		int columns = 28;
-		int rows = 14;
-		background = new GRect(columns * res, rows * res);
-		background.setFilled(true);
-		background.setColor(new Color(255, 99, 71));
-
+		background = new GImage("CoronaResBackground.png");
 	}
 
 	@Override
@@ -57,6 +51,8 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 		add(background);
 		// creating the map depending on the model we use
 		createMap(model);
+
+		sendToFront();
 	}
 
 	/** declaring the randomgenerator instance. */
@@ -85,7 +81,7 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 						Color color = rgen.nextColor();
 						add(new CoinsCoronaRes(color), c * res, r * res);
 					} else if (map[r][c] == MapTiles.HEART) {
-						add(new HeartsHighRes(), c * res, r * res);
+						add(new GImage("CoronaResHeart.png"), c * res, r * res);
 					}
 				}
 			}
@@ -93,7 +89,8 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 			add(new VacManCoronaRes(), model.getVacManPos().getX() * res, model.getVacManPos().getY() * res);
 			// adding every ghost with its color
 			for (Ghost ghost : model.getGhosts()) {
-				add(new GhostCoronaRes(ghost.getColor()), ghost.getPos().getX() * res, ghost.getPos().getY() * res);
+				GImage neu = new GImage("CoronaResGhost.png");
+				add(neu, ghost.getPos().getX() * res, ghost.getPos().getY() * res);
 			}
 
 		} else if (model.getCurrentScreen() == Screen.GAMEOVER) {
@@ -105,7 +102,12 @@ public class CoronaResView extends GCompound implements VacManView<VacManModel> 
 		} else if (model.getCurrentScreen() == Screen.SELECTION) {
 			add(new GImage("HighResLevelSelection.png"));
 		} else if (model.getCurrentScreen() == Screen.SETTINGS) {
-			add(new GImage("HighResSettings.png"));
+			if (model.getLightHouseOn()) {
+				add(new GImage("HighResSettingsChecked.png"));
+			} else {
+				add(new GImage("HighResSettingsUnchecked.png"));
+
+			}
 		}
 	}
 }

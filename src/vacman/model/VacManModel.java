@@ -1,11 +1,11 @@
 package vacman.model;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import vacman.view.CoronaResView;
+import vacman.view.HDResView;
 import vacman.view.HighResView;
 import vacman.view.LightHouseView;
 import vacman.view.VacManView;
@@ -24,7 +24,7 @@ public class VacManModel {
 	/** The position of VacMan. */
 	private Point vacmanPosition;
 	/** Position of VacMan one time step before. */
-	private Point vacmanPrePos;
+	private Point vacmanPrePos = new Point();
 	/** Spawning position of VacMan. */
 	private Point vacmanSpawnPosition;
 	/** Array of ghosts from the current map. */
@@ -56,69 +56,16 @@ public class VacManModel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		if (currentScreen == Screen.CURRENTLEVEL) {
-			activeLevel = maps.get(currentLevel);
-			map = activeLevel.getMap();
-			vacmanPosition.setLocation(activeLevel.getVacmanStartPos());
-			for (Point ghostStartPos : activeLevel.getGhostStartPos()) {
-				ghosts.add(new Ghost(ghostStartPos, Direction.DOWN, activeLevel.getMap(), Color.CYAN));
-			}
-		}
-
-		// Initializes everything.
-		hearts = 3;
 		LightHouseView lightV = new LightHouseView();
 		CoronaResView coronaV = new CoronaResView();
 		HighResView highV = new HighResView();
-		// lightV: 0.
+		HDResView hdV = new HDResView();
 		views.add(lightV);
 		views.add(highV);
 		views.add(coronaV);
-
+		views.add(hdV);
 		currentView = highV;
 
-		numberOfPoints = 128;
-		vacmanSpawnPosition = new Point(14, 4);
-		vacmanPosition = new Point(14, 4);
-
-		// Represents the first VacMan map in an array. 3: Hearts, 2: Points, 1: Walls
-		// and 0: empty.
-		int[][] visualMap = {
-				// row 0
-				{ 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
-				// row 1
-				{ 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0 },
-				// row 2
-				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-				// row 3
-				{ 1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 0, 0, 2, 2, 2, 2, 2, 2, 1 },
-				// row 4
-				{ 1, 2, 1, 1, 1, 1, 2, 0, 2, 2, 1, 0, 2, 2, 0, 2, 0, 1, 2, 2, 0, 2, 1, 1, 1, 1, 2, 1 },
-				// row 5
-				{ 1, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1 },
-				// row 6
-				{ 1, 2, 1, 2, 1, 1, 1, 1, 2, 0, 0, 0, 2, 1, 1, 2, 0, 0, 0, 2, 1, 1, 1, 1, 2, 1, 2, 1 },
-				// row 7
-				{ 1, 2, 1, 2, 1, 2, 2, 2, 2, 0, 0, 1, 2, 2, 2, 2, 1, 0, 0, 2, 2, 2, 2, 1, 2, 1, 2, 1 },
-				// row 8
-				{ 1, 2, 1, 2, 2, 1, 1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 2, 1, 1, 1, 2, 2, 1, 2, 1 },
-				// row 9
-				{ 1, 2, 1, 2, 2, 1, 1, 1, 2, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 2, 1, 1, 1, 2, 2, 1, 2, 1 },
-				// row 10
-				{ 1, 2, 2, 2, 2, 1, 1, 1, 2, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 2, 1, 1, 1, 2, 2, 2, 2, 1 },
-				// row 11
-				{ 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1 },
-				// row 12
-				{ 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0 },
-				// row 13
-				{ 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 } };
-		// The map is converted into a MapTiles map.
-		map = intToMapTiles(visualMap);
-
-		// Adds two Ghost objects to the Ghost arraylist.
-		ghosts.add(new Ghost(new Point(13, 9), Direction.DOWN, map, Color.CYAN));
-		ghosts.add(new Ghost(new Point(13, 10), Direction.DOWN, map, Color.MAGENTA));
 	}
 
 	/**
@@ -148,12 +95,63 @@ public class VacManModel {
 				if (map[r][c] == 0) {
 					tileMap[r][c] = MapTiles.VOID;
 				}
-				if (map[r][c] > 3) {
-					throw new IllegalArgumentException("Not included in MapTiles.");
+				if (map[r][c] == 6) {
+					tileMap[r][c] = MapTiles.BACKGROUND;
+				}
+				if (map[r][c] == 7) {
+					tileMap[r][c] = MapTiles.HOCHHAUS;
+				}
+				if (map[r][c] == 8) {
+					tileMap[r][c] = MapTiles.FENSTER;
+				}
+				if (map[r][c] == 9) {
+					tileMap[r][c] = MapTiles.SCHRIFT;
+				}
+				if (map[r][c] == 10) {
+					tileMap[r][c] = MapTiles.ENTERSYMBOL;
 				}
 			}
 		}
 		return tileMap;
+	}
+
+	public void reset() {
+		hearts = 3;
+		vacmanDir = null;
+	}
+
+	public void setPoints(int points) {
+		numberOfPoints = points;
+	}
+
+	public void setGhosts(ArrayList<Ghost> ghosts) {
+		this.ghosts = ghosts;
+	}
+
+	public void setActiveLevel(Level level) {
+		this.activeLevel = level;
+	}
+
+	public Level getActiveLevel() {
+		return activeLevel;
+	}
+
+	public void setVacmanSpawnPosition(Point vacmanSpawnPosition) {
+		this.vacmanSpawnPosition = vacmanSpawnPosition;
+	}
+
+	public ArrayList<Level> getMaps() {
+		return maps;
+	}
+
+	/** Setter for the lighthouse. */
+	public void setLightHouseOn(boolean lightHouseOn) {
+		this.lightHouseOn = lightHouseOn;
+	}
+
+	/** Getter for the light house on. */
+	public boolean getLightHouseOn() {
+		return lightHouseOn;
 	}
 
 	/** Setter for the Direction of VacMan. */
@@ -242,10 +240,7 @@ public class VacManModel {
 	public void gameover() {
 		// Switches to the gameover map and sets the corresponding level.
 
-		currentLevel = -1;
-		// Also resets numberOfPoints and hearts.
-		numberOfPoints = 128;
-		hearts = 3;
+		currentScreen = Screen.GAMEOVER;
 
 	}
 
@@ -253,10 +248,7 @@ public class VacManModel {
 	public void win() {
 		// Switches to the win map and sets the corresponding level.
 
-		currentLevel = 0;
-		// Also resets numberOfPoints and hearts.
-		numberOfPoints = 128;
-		hearts = 3;
+		currentScreen = Screen.WIN;
 
 	}
 
@@ -265,115 +257,121 @@ public class VacManModel {
 	 * correlated views.
 	 */
 	public void update() {
-		vacmanPrePos = vacmanPosition;
-		for (Ghost ghost : ghosts) {
-			ghost.setGhostPrePos(ghost.getPos());
-		}
-		// If the numberOfPoints counter reaches 0 all coins are collected and the game
-		// is won.
-		if (numberOfPoints == 0) {
-			// Resets all positions to their spawnpoints.
-			for (Ghost ghost1 : ghosts) {
-				ghost1.setPos(ghost1.getGhostSpawnPos());
-			}
-			vacmanPosition.setLocation(vacmanSpawnPosition);
-			vacmanDir = null;
-			// And calls the win method.
-			win();
-		}
-		// Here the movement part starts.
-		int velocity = 1;
-		int vacX = (int) vacmanPosition.getX();
-		int vacY = (int) vacmanPosition.getY();
 
-		// Checks in which direction VacMan runs right now and checks the corresponding
-		// field he is moving into.
-		if (vacmanDir == Direction.LEFT) {
-			// Checks the MapTiles of the next cell of the map array.
-			if (map[vacY][vacX - 1] == MapTiles.COIN) {
+		if (currentScreen == Screen.CURRENTLEVEL) {
 
-				map[vacY][vacX - 1] = MapTiles.VOID;
-				// If a coin got collected the counter is decremented.
-				numberOfPoints--;
-				// VacMan moves to the next cell, if it is no wall.
-				vacmanPosition.setLocation(vacmanPosition.getX() - velocity, vacmanPosition.getY());
-			} else if (map[vacY][vacX - 1] == MapTiles.VOID) {
-
-				vacmanPosition.setLocation(vacmanPosition.getX() - velocity, vacmanPosition.getY());
-			}
-			// Same for the other directions.
-		} else if (vacmanDir == Direction.RIGHT) {
-
-			if (map[vacY][vacX + 1] == MapTiles.COIN) {
-
-				map[vacY][vacX + 1] = MapTiles.VOID;
-				numberOfPoints--;
-				vacmanPosition.setLocation(vacmanPosition.getX() + velocity, vacmanPosition.getY());
-			} else if (map[vacY][vacX + 1] == MapTiles.VOID) {
-
-				vacmanPosition.setLocation(vacmanPosition.getX() + velocity, vacmanPosition.getY());
+			vacmanPrePos.setLocation(vacmanPosition);
+			for (Ghost ghost : ghosts) {
+				ghost.setGhostPrePos(ghost.getPos());
 			}
 
-		} else if (vacmanDir == Direction.UP) {
-
-			if (map[vacY - 1][vacX] == MapTiles.COIN) {
-
-				map[vacY - 1][vacX] = MapTiles.VOID;
-				numberOfPoints--;
-				vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() - velocity);
-			} else if (map[vacY - 1][vacX] == MapTiles.VOID) {
-
-				vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() - velocity);
-			}
-
-		} else if (vacmanDir == Direction.DOWN) {
-
-			if (map[vacY + 1][vacX] == MapTiles.COIN) {
-
-				map[vacY + 1][vacX] = MapTiles.VOID;
-				numberOfPoints--;
-				vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() + velocity);
-			} else if (map[vacY + 1][vacX] == MapTiles.VOID) {
-
-				vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() + velocity);
-			}
-
-		}
-		// After VacMan moved, every ghost is moved.
-		for (Ghost ghost : ghosts) {
-			ghost.move();
-		}
-		// Goes through all ghosts and checks if their position collides with VacMans.
-		for (Ghost ghost : ghosts) {
-
-			if (vacmanPosition.equals(ghost.getGhostPrePos()) && vacmanPrePos.equals(ghost.getPos())) {
-				// If so, a heart disappears and the heart counter gets decremented.
-				hearts--;
-				if (hearts == 2) {
-					map[0][2] = MapTiles.VOID;
-					// Death animation.
-
-				} else if (hearts == 1) {
-					map[0][1] = MapTiles.VOID;
-					// Explosionmethod.
-
-				} else if (hearts == 0) {
-					map[0][0] = MapTiles.VOID;
-					// If the last heart disappears the game is over and so the gameover method is
-					// called. Also VacMan position and direction is reseted.
-					vacmanPosition.setLocation(vacmanSpawnPosition);
-					vacmanDir = null;
-					gameover();
-
-				}
-				// After VacMan hits a ghost, the VacMan and ghosts are reseted to their
-				// spawnpoints.
-				vacmanPosition.setLocation(vacmanSpawnPosition);
+			// If the numberOfPoints counter reaches 0 all coins are collected and the game
+			// is won.
+			if (numberOfPoints == 0) {
+				// Resets all positions to their spawnpoints.
 				for (Ghost ghost1 : ghosts) {
 					ghost1.setPos(ghost1.getGhostSpawnPos());
 				}
-
+				vacmanPosition.setLocation(vacmanSpawnPosition);
 				vacmanDir = null;
+				// And calls the win method.
+				win();
+			}
+			// Here the movement part starts.
+			int velocity = 1;
+			int vacX = (int) vacmanPosition.getX();
+			int vacY = (int) vacmanPosition.getY();
+
+			// Checks in which direction VacMan runs right now and checks the corresponding
+			// field he is moving into.
+			if (vacmanDir == Direction.LEFT) {
+				// Checks the MapTiles of the next cell of the map array.
+				if (map[vacY][vacX - 1] == MapTiles.COIN) {
+
+					map[vacY][vacX - 1] = MapTiles.VOID;
+					// If a coin got collected the counter is decremented.
+					numberOfPoints--;
+					// VacMan moves to the next cell, if it is no wall.
+					vacmanPosition.setLocation(vacmanPosition.getX() - velocity, vacmanPosition.getY());
+				} else if (map[vacY][vacX - 1] == MapTiles.VOID) {
+
+					vacmanPosition.setLocation(vacmanPosition.getX() - velocity, vacmanPosition.getY());
+				}
+				// Same for the other directions.
+			} else if (vacmanDir == Direction.RIGHT) {
+
+				if (map[vacY][vacX + 1] == MapTiles.COIN) {
+
+					map[vacY][vacX + 1] = MapTiles.VOID;
+					numberOfPoints--;
+					vacmanPosition.setLocation(vacmanPosition.getX() + velocity, vacmanPosition.getY());
+				} else if (map[vacY][vacX + 1] == MapTiles.VOID) {
+
+					vacmanPosition.setLocation(vacmanPosition.getX() + velocity, vacmanPosition.getY());
+				}
+
+			} else if (vacmanDir == Direction.UP) {
+
+				if (map[vacY - 1][vacX] == MapTiles.COIN) {
+
+					map[vacY - 1][vacX] = MapTiles.VOID;
+					numberOfPoints--;
+					vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() - velocity);
+				} else if (map[vacY - 1][vacX] == MapTiles.VOID) {
+
+					vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() - velocity);
+				}
+
+			} else if (vacmanDir == Direction.DOWN) {
+
+				if (map[vacY + 1][vacX] == MapTiles.COIN) {
+
+					map[vacY + 1][vacX] = MapTiles.VOID;
+					numberOfPoints--;
+					vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() + velocity);
+				} else if (map[vacY + 1][vacX] == MapTiles.VOID) {
+
+					vacmanPosition.setLocation(vacmanPosition.getX(), vacmanPosition.getY() + velocity);
+				}
+
+			}
+			// After VacMan moved, every ghost is moved.
+			for (Ghost ghost : ghosts) {
+				ghost.move();
+			}
+			// Goes through all ghosts and checks if their position collides with VacMans.
+			for (Ghost ghost : ghosts) {
+
+				if (vacmanPosition.equals(ghost.getPos())
+						|| (vacmanPosition.equals(ghost.getGhostPrePos()) && vacmanPrePos.equals(ghost.getPos()))) {
+					// If so, a heart disappears and the heart counter gets decremented.
+					hearts--;
+					if (hearts == 2) {
+						map[0][2] = MapTiles.VOID;
+						// Death animation.
+
+					} else if (hearts == 1) {
+						map[0][1] = MapTiles.VOID;
+						// Explosionmethod.
+
+					} else if (hearts == 0) {
+						map[0][0] = MapTiles.VOID;
+						// If the last heart disappears the game is over and so the gameover method is
+						// called. Also VacMan position and direction is reseted.
+						vacmanPosition.setLocation(vacmanSpawnPosition);
+						vacmanDir = null;
+						gameover();
+
+					}
+					// After VacMan hits a ghost, the VacMan and ghosts are reseted to their
+					// spawnpoints.
+					vacmanPosition.setLocation(vacmanSpawnPosition);
+					for (Ghost ghost1 : ghosts) {
+						ghost1.setPos(ghost1.getGhostSpawnPos());
+					}
+
+					vacmanDir = null;
+				}
 			}
 		}
 		// And the view is updated as well.

@@ -1,12 +1,17 @@
 package vacman.controller;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import acm.graphics.GRect;
+import acm.util.RandomGenerator;
 import vacman.model.Direction;
+import vacman.model.Ghost;
+import vacman.model.MapTiles;
 import vacman.model.Screen;
 import vacman.model.VacManModel;
 
@@ -18,6 +23,7 @@ import vacman.model.VacManModel;
 public class VacManController extends MouseAdapter implements KeyListener {
 	/** Instance that keeps the corresponding model. */
 	private VacManModel model;
+	private RandomGenerator rgen = new RandomGenerator().getInstance();
 
 	/**
 	 * The Constructor of the controller.
@@ -27,6 +33,10 @@ public class VacManController extends MouseAdapter implements KeyListener {
 	public VacManController(VacManModel model) {
 		this.model = model;
 
+	}
+
+	<T> T[][] deepCopy(T[][] matrix) {
+		return java.util.Arrays.stream(matrix).map(el -> el.clone()).toArray($ -> matrix.clone());
 	}
 
 	@Override
@@ -42,6 +52,8 @@ public class VacManController extends MouseAdapter implements KeyListener {
 				model.setVacManDir(Direction.LEFT);
 			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 				model.setVacManDir(Direction.RIGHT);
+			} else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				model.setCurrentScreen(Screen.SELECTION);
 			}
 		}
 		// Changes the screen from start to level selection.
@@ -72,24 +84,83 @@ public class VacManController extends MouseAdapter implements KeyListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+
 		// Should do the same like the enter button, but does nothing.
 		if (model.getCurrentScreen() == Screen.SELECTION) {
 			if (new GRect(2 * model.getCurrentView().getRes(), 4 * model.getCurrentView().getRes(),
 					7 * model.getCurrentView().getRes(), 2 * model.getCurrentView().getRes()).contains(e.getX(),
 							e.getY())) {
-				model.setCurrentLevel(0);
+
+				model.setActiveLevel(model.getMaps().get(0));
+				model.reset();
+				model.setVacManPosition(model.getActiveLevel().getVacmanStartPos().x,
+						model.getActiveLevel().getVacmanStartPos().y);
+				model.setVacmanSpawnPosition(new Point(model.getActiveLevel().getVacmanStartPos()));
+				ArrayList<Ghost> ghosts = new ArrayList<Ghost>();
+				for (Point point : model.getActiveLevel().getGhostStartPos()) {
+					ghosts.add(new Ghost(point, Direction.DOWN, model.getActiveLevel().getMap(), rgen.nextColor()));
+				}
+				model.setGhosts(ghosts);
+				model.setCurrentMap(deepCopy(model.getActiveLevel().getMap()));
+				int coins = 0;
+				for (int r = 0; r < model.getCurrentMap().length; r++) {
+					for (int c = 0; c < model.getCurrentMap()[1].length; c++) {
+						if (model.getCurrentMap()[r][c] == MapTiles.COIN) {
+							coins++;
+						}
+					}
+				}
+				model.setPoints(coins);
 				model.setCurrentScreen(Screen.CURRENTLEVEL);
 
 			} else if (new GRect(2 * model.getCurrentView().getRes(), 7 * model.getCurrentView().getRes(),
 					7 * model.getCurrentView().getRes(), 2 * model.getCurrentView().getRes()).contains(e.getX(),
 							e.getY())) {
-				model.setCurrentLevel(0);
+				model.setActiveLevel(model.getMaps().get(1));
+				model.reset();
+				model.setVacManPosition(model.getActiveLevel().getVacmanStartPos().x,
+						model.getActiveLevel().getVacmanStartPos().y);
+				model.setVacmanSpawnPosition(new Point(model.getActiveLevel().getVacmanStartPos()));
+				ArrayList<Ghost> ghosts = new ArrayList<Ghost>();
+				for (Point point : model.getActiveLevel().getGhostStartPos()) {
+					ghosts.add(new Ghost(point, Direction.DOWN, model.getActiveLevel().getMap(), rgen.nextColor()));
+				}
+				model.setGhosts(ghosts);
+				model.setCurrentMap(deepCopy(model.getActiveLevel().getMap()));
+				int coins = 0;
+				for (int r = 0; r < model.getCurrentMap().length; r++) {
+					for (int c = 0; c < model.getCurrentMap()[1].length; c++) {
+						if (model.getCurrentMap()[r][c] == MapTiles.COIN) {
+							coins++;
+						}
+					}
+				}
+				model.setPoints(coins);
 				model.setCurrentScreen(Screen.CURRENTLEVEL);
 
 			} else if (new GRect(2 * model.getCurrentView().getRes(), 10 * model.getCurrentView().getRes(),
 					7 * model.getCurrentView().getRes(), 2 * model.getCurrentView().getRes()).contains(e.getX(),
 							e.getY())) {
-				model.setCurrentLevel(0);
+				model.setActiveLevel(model.getMaps().get(2));
+				model.reset();
+				model.setVacManPosition(model.getActiveLevel().getVacmanStartPos().x,
+						model.getActiveLevel().getVacmanStartPos().y);
+				model.setVacmanSpawnPosition(new Point(model.getActiveLevel().getVacmanStartPos()));
+				ArrayList<Ghost> ghosts = new ArrayList<Ghost>();
+				for (Point point : model.getActiveLevel().getGhostStartPos()) {
+					ghosts.add(new Ghost(point, Direction.DOWN, model.getActiveLevel().getMap(), rgen.nextColor()));
+				}
+				model.setGhosts(ghosts);
+				model.setCurrentMap(deepCopy(model.getActiveLevel().getMap()));
+				int coins = 0;
+				for (int r = 0; r < model.getCurrentMap().length; r++) {
+					for (int c = 0; c < model.getCurrentMap()[1].length; c++) {
+						if (model.getCurrentMap()[r][c] == MapTiles.COIN) {
+							coins++;
+						}
+					}
+				}
+				model.setPoints(coins);
 				model.setCurrentScreen(Screen.CURRENTLEVEL);
 
 			} else if (new GRect(24 * model.getCurrentView().getRes(), 10 * model.getCurrentView().getRes(),
@@ -102,24 +173,31 @@ public class VacManController extends MouseAdapter implements KeyListener {
 			if (new GRect(2 * model.getCurrentView().getRes(), 4 * model.getCurrentView().getRes(),
 					7 * model.getCurrentView().getRes(), 2 * model.getCurrentView().getRes()).contains(e.getX(),
 							e.getY())) {
-				System.out.println("before");
+
 				model.setCurrentView(model.getViews().get(1));
-				System.out.println("after");
+
 			}
 			// Coronasolution.
 			else if (new GRect(2 * model.getCurrentView().getRes(), 7 * model.getCurrentView().getRes(),
 					7 * model.getCurrentView().getRes(), 2 * model.getCurrentView().getRes()).contains(e.getX(),
 							e.getY())) {
-				System.out.println("before1");
+
 				model.setCurrentView(model.getViews().get(2));
-				System.out.println("after1");
+
 			}
-			// Lighthouseview.
+			// Full HD View.
 			else if (new GRect(2 * model.getCurrentView().getRes(), 10 * model.getCurrentView().getRes(),
 					7 * model.getCurrentView().getRes(), 2 * model.getCurrentView().getRes()).contains(e.getX(),
 							e.getY())) {
-				model.setCurrentLevel(0);
-				model.setCurrentScreen(Screen.CURRENTLEVEL);
+				model.setCurrentView(model.getViews().get(3));
+
+			}
+			// Lighthouse check
+			else if (new GRect(11 * model.getCurrentView().getRes(), 7 * model.getCurrentView().getRes(),
+					7 * model.getCurrentView().getRes(), 2 * model.getCurrentView().getRes()).contains(e.getX(),
+							e.getY())) {
+
+				model.setLightHouseOn(!model.getLightHouseOn());
 
 			}
 		}

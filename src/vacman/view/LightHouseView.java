@@ -288,7 +288,7 @@ public class LightHouseView implements VacManView<VacManModel> {
 		try {
 			display = LighthouseDisplay.getDisplay();
 			display.setUsername("ng217779");
-			display.setToken("API-TOK_Qaap-r3+v-h47l-RBhy-jRem");
+			display.setToken("API-TOK_YQuB-fRrE-dbOo-+uou-iDBl");
 		} catch (Exception e) {
 			System.out.println("Connection failed: " + e.getMessage());
 			e.printStackTrace();

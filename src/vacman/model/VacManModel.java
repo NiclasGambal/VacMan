@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import acm.util.RandomGenerator;
+import de.cau.infprogoo.lighthouse.Timer;
 import vacman.view.CoronaResView;
 import vacman.view.HDResView;
 import vacman.view.HighResView;
@@ -33,8 +35,6 @@ public class VacManModel {
 	private int numberOfPoints;
 	/** Counter for the lives. */
 	private int hearts;
-	/** The number of the current Map. */
-	private int currentLevel = -1;
 	/** Direction of the VacMan movement. */
 	private Direction vacmanDir;
 	/** The currently displayed screen. */
@@ -47,6 +47,10 @@ public class VacManModel {
 	private ArrayList<VacManView<VacManModel>> views = new ArrayList<VacManView<VacManModel>>();
 	/** Boolean which is true if the LHV is on. */
 	private boolean lightHouseOn = false;
+	/** Tracks the current move set of the ghosts. */
+	private int moveVarietyCounter = 0;
+	/** Randomgenerator. */
+	private RandomGenerator rgen = RandomGenerator.getInstance();
 
 	/** Creates the model of the game with the current level. */
 	public VacManModel() {
@@ -179,11 +183,6 @@ public class VacManModel {
 		this.currentScreen = currentScreen;
 	}
 
-	/** Setter for the current level. */
-	public void setCurrentLevel(int currentLevel) {
-		this.currentLevel = currentLevel;
-	}
-
 	/** Getter for the current screen. */
 	public Screen getCurrentScreen() {
 		return currentScreen;
@@ -226,16 +225,6 @@ public class VacManModel {
 		this.map = map;
 	}
 
-	/** Getter of the current level. */
-	public int getLevel() {
-		return currentLevel;
-	}
-
-	/** Setter of the current level. */
-	public void setLevel(int level) {
-		currentLevel = level;
-	}
-
 	/** The method that is called when the game is gameover. */
 	public void gameover() {
 		// Switches to the gameover map and sets the corresponding level.
@@ -257,6 +246,10 @@ public class VacManModel {
 	 * correlated views.
 	 */
 	public void update() {
+
+		for (int i = 0; i < 9; i++) {
+			updateSprite(i);
+		}
 
 		if (currentScreen == Screen.CURRENTLEVEL) {
 
@@ -337,7 +330,12 @@ public class VacManModel {
 			}
 			// After VacMan moved, every ghost is moved.
 			for (Ghost ghost : ghosts) {
-				ghost.move();
+				if (rgen.nextBoolean(0.5)) {
+					ghost.moveAI(vacmanPosition);
+				} else {
+					ghost.move();
+				}
+
 			}
 			// Goes through all ghosts and checks if their position collides with VacMans.
 			for (Ghost ghost : ghosts) {
@@ -376,6 +374,11 @@ public class VacManModel {
 		}
 		// And the view is updated as well.
 		notifyViews();
+	}
+
+	private void updateSprite(int numberOfSprite) {
+		Timer timer = new Timer(20);
+		timer.pause();
 	}
 
 }

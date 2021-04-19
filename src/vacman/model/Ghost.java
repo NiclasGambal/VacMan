@@ -2,6 +2,8 @@ package vacman.model;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import acm.util.RandomGenerator;
 
@@ -36,7 +38,7 @@ public class Ghost {
 	 * @param color    the specific color of a ghoast.
 	 */
 	public Ghost(Point startPos, Direction startDir, MapTiles[][] map, Color color) {
-		// saving the inputs in instance variables of the goast and creatint a new
+		// saving the inputs in instance variables of the goast and creating a new
 		// ghoast
 		ghostPosition = new Point(startPos);
 		ghostSpawnPosition = new Point(startPos);
@@ -123,6 +125,56 @@ public class Ghost {
 		}
 	}
 
+	public void moveAI(Point playerPos) {
+		// Search Queque.
+		LinkedList<Point> searchList = new LinkedList<Point>();
+		// Map to safe the shortest path.
+		HashMap<Point, Point> lastPoint = new HashMap<Point, Point>();
+		// Map we move in.
+		boolean[][] map = mapTilesToBoolean(this.map);
+		Point startPoint = new Point(ghostPosition);
+		Point goalPoint = new Point(playerPos);
+
+		// Array for the directions.
+		int[] dirs = { -1, 0, 1, 0 };
+		searchList.add(startPoint);
+		while (!searchList.isEmpty()) {
+			boolean found = false;
+			Point currentPoint = new Point(searchList.getFirst());
+			searchList.removeFirst();
+
+			// Explore.
+			for (int i = 0; i < dirs.length; i++) {
+				if (!map[currentPoint.y + dirs[i]][currentPoint.x + dirs[3 - i]]) {
+					Point point = new Point(currentPoint.x + dirs[3 - i], currentPoint.y + dirs[i]);
+					lastPoint.put(point, currentPoint);
+					map[point.y][point.x] = true;
+					searchList.add(point);
+
+					if (point.equals(goalPoint)) {
+						found = true;
+						break;
+					}
+
+				}
+				if (found) {
+					break;
+				}
+			}
+			if (found) {
+				break;
+			}
+		}
+		while (true) {
+			Point preGoal = new Point(goalPoint);
+			goalPoint.setLocation(lastPoint.get(goalPoint));
+			if (goalPoint.equals(startPoint)) {
+				ghostPosition.setLocation(preGoal);
+				break;
+			}
+		}
+	}
+
 	/**
 	 * gets the current position of a ghost.
 	 * 
@@ -167,5 +219,19 @@ public class Ghost {
 	 */
 	public Point getGhostSpawnPos() {
 		return ghostSpawnPosition;
+	}
+
+	public boolean[][] mapTilesToBoolean(MapTiles[][] map) {
+		// Initializes boolean map.
+		boolean[][] tileMap = new boolean[14][28];
+		// Converts/copies the MapTiles map into the boolean map.
+		for (int r = 0; r < map.length; r++) {
+			for (int c = 0; c < map[r].length; c++) {
+				if (map[r][c] == MapTiles.WALL) {
+					tileMap[r][c] = true;
+				}
+			}
+		}
+		return tileMap;
 	}
 }

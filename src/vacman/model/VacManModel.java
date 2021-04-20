@@ -330,7 +330,7 @@ public class VacManModel {
 			}
 			// After VacMan moved, every ghost is moved.
 			for (Ghost ghost : ghosts) {
-				if (rgen.nextBoolean(0.5)) {
+				if (rgen.nextBoolean(0.8)) {
 					ghost.moveAI(vacmanPosition);
 				} else {
 					ghost.move();

@@ -1,4 +1,4 @@
-## PacMan
+## VacMan
 # Background
 In one of my first modules called ProgOO, in the end we had two project weeks to create a game. 
 The product of these two weeks is this PacMan variant. I had a lot of fun by coding it and so 
